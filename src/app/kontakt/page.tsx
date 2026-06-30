@@ -1,0 +1,31 @@
+import type { Metadata } from "next";
+import ContactPageContent from "@/components/ContactPageContent";
+import JsonLd from "@/components/JsonLd";
+import { createPageMetadata, getBreadcrumbJsonLd } from "@/lib/seo";
+import { SITE } from "@/data/site";
+
+export const metadata: Metadata = createPageMetadata({
+  title: "Kontakt & Öppettider",
+  description:
+    `Kontakta Glansbilvatt för biltvätt och bilrekond i Eskilstuna. ${SITE.address.full}. Öppettider mån–fre 08–18, lör 10–17. Ring ${SITE.phone} eller ${SITE.phoneSecondary}.`,
+  path: "/kontakt",
+  keywords: [
+    "biltvätt Eskilstuna adress",
+    "bilrekond Eskilstuna kontakt",
+    "Glansbilvatt öppettider",
+  ],
+});
+
+export default function KontaktPage() {
+  return (
+    <>
+      <JsonLd
+        data={getBreadcrumbJsonLd([
+          { name: "Hem", path: "/" },
+          { name: "Kontakt", path: "/kontakt" },
+        ])}
+      />
+      <ContactPageContent />
+    </>
+  );
+}
