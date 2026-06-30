@@ -1620,13 +1620,14 @@ svg {
 
 .contact-wrap {
   width: 100%;
-  max-width: 1120px;
-  margin: 0 auto;
-  padding: 2.5rem 1.5rem 2.75rem;
+  max-width: none;
+  margin: 0;
+  padding: clamp(2.5rem, 5vw, 4rem) clamp(2rem, 5vw, 5rem) clamp(2.5rem, 4vw, 3.5rem);
+  box-sizing: border-box;
 }
 
 .contact-page-head {
-  max-width: 42rem;
+  max-width: none;
   padding: 0 0 1.75rem;
   border-bottom: 1px solid #ececec;
   margin-bottom: 2rem;
@@ -1654,21 +1655,29 @@ svg {
   font-size: 0.9375rem;
   line-height: 1.65;
   color: rgba(17, 17, 17, 0.62);
-  max-width: 54ch;
+  max-width: 65ch;
 }
 
 .contact-body {
   display: grid;
   grid-template-columns: 1fr;
   gap: 1.5rem;
-  align-items: start;
+  align-items: stretch;
+  width: 100%;
   padding: 0;
 }
 
 @media (min-width: 900px) {
   .contact-body {
-    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
-    gap: 2rem;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1.15fr);
+    gap: clamp(2rem, 4vw, 4rem);
+  }
+}
+
+@media (min-width: 1200px) {
+  .contact-body {
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1.25fr);
+    gap: clamp(2.5rem, 5vw, 5rem);
   }
 }
 
@@ -1844,6 +1853,8 @@ a.contact-info-card:hover {
 .contact-map-block {
   display: flex;
   flex-direction: column;
+  height: 100%;
+  min-height: 100%;
   border-radius: 16px;
   overflow: hidden;
   border: 1px solid #e5e5e5;
@@ -1853,9 +1864,9 @@ a.contact-info-card:hover {
 
 .contact-map-block-frame {
   position: relative;
+  flex: 1;
   width: 100%;
-  aspect-ratio: 1;
-  min-height: 300px;
+  min-height: 360px;
   background: #e8e8e8;
 }
 
