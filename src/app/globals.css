@@ -594,15 +594,24 @@ svg {
 .why {
   position: relative;
   z-index: 3;
-  max-width: 1100px;
-  margin: -26vh auto 0;
-  padding: 0 2.5rem 2.5rem;
+  width: 100%;
+  max-width: none;
+  margin: -26vh 0 0;
+  padding: 0;
 }
 
 @media (min-width: 768px) {
   .why {
     background: #9a231e;
   }
+}
+
+.why-inner {
+  width: 100%;
+  max-width: none;
+  margin: 0;
+  padding: 0 clamp(2rem, 5vw, 5rem) 2.5rem;
+  box-sizing: border-box;
 }
 
 .why-heading {
@@ -2768,9 +2777,13 @@ body.cart-booking-open .services--with-cart {
   }
 
   .why {
-    margin: 0 auto;
-    padding: 2.5rem 1.25rem 2rem;
+    margin: 0;
+    padding: 0;
     background: #ffffff;
+  }
+
+  .why-inner {
+    padding: 2.5rem 1.25rem 2rem;
   }
 
   .why-heading {
@@ -2868,12 +2881,23 @@ body.cart-booking-open .services--with-cart {
   .why,
   .stats,
   .home-info {
+    padding-left: 0;
+    padding-right: 0;
+  }
+
+  .why-inner {
+    padding-left: 1.75rem;
+    padding-right: 1.75rem;
+  }
+
+  .stats,
+  .home-info {
     padding-left: 1.75rem;
     padding-right: 1.75rem;
   }
 
   .why {
-    margin: -14vh auto 0;
+    margin: -14vh 0 0;
   }
 
   .hero-actions {
@@ -2883,7 +2907,7 @@ body.cart-booking-open .services--with-cart {
 
 @media (min-width: 1024px) {
   .why {
-    margin: -26vh auto 0;
+    margin: -26vh 0 0;
   }
 }
 

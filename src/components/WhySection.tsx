@@ -35,17 +35,19 @@ const features = [
 export default function WhySection() {
   return (
     <section className="why">
-      <h2 className="why-heading">Varför välja Glansbilvatt för biltvätt i Eskilstuna?</h2>
-      <div className="why-grid">
-        {features.map((feature) => (
-          <article key={feature.title} className="why-card">
-            <div className="why-card-icon">{feature.icon}</div>
-            <div className="why-card-body">
-              <h3 className="why-card-title">{feature.title}</h3>
-              <p className="why-card-text">{feature.description}</p>
-            </div>
-          </article>
-        ))}
+      <div className="why-inner">
+        <h2 className="why-heading">Varför välja Glansbilvatt för biltvätt i Eskilstuna?</h2>
+        <div className="why-grid">
+          {features.map((feature) => (
+            <article key={feature.title} className="why-card">
+              <div className="why-card-icon">{feature.icon}</div>
+              <div className="why-card-body">
+                <h3 className="why-card-title">{feature.title}</h3>
+                <p className="why-card-text">{feature.description}</p>
+              </div>
+            </article>
+          ))}
+        </div>
       </div>
     </section>
   );
