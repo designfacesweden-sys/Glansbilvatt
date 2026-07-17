@@ -817,13 +817,16 @@ svg {
 
 /* ── Home info / FAQ ── */
 .home-info {
-  padding: 4rem clamp(1.25rem, 3vw, 2.5rem) 5rem;
+  width: 100%;
+  padding: clamp(3rem, 5vw, 4.5rem) clamp(1.25rem, 3vw, 2.5rem) clamp(3.5rem, 5vw, 5rem);
   background: linear-gradient(165deg, #9a231e 0%, #7a1c18 55%, #641713 100%);
+  box-sizing: border-box;
 }
 
 .home-info-inner {
-  max-width: min(1520px, 100%);
-  margin: 0 auto;
+  width: 100%;
+  max-width: none;
+  margin: 0;
 }
 
 .home-info-top {
@@ -831,13 +834,21 @@ svg {
   grid-template-columns: 1fr;
   gap: 2.5rem;
   margin-bottom: 4rem;
+  width: 100%;
 }
 
 @media (min-width: 900px) {
   .home-info-top {
-    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
-    gap: clamp(2rem, 4vw, 3.5rem);
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1.15fr);
+    gap: clamp(2.5rem, 5vw, 5rem);
     align-items: start;
+  }
+}
+
+@media (min-width: 1200px) {
+  .home-info-top {
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1.25fr);
+    gap: clamp(3rem, 6vw, 6rem);
   }
 }
 
@@ -1032,15 +1043,23 @@ svg {
   display: grid;
   grid-template-columns: 1fr;
   gap: 1.75rem;
+  width: 100%;
   padding-top: 3rem;
   border-top: 1px solid rgba(255, 255, 255, 0.14);
 }
 
 @media (min-width: 900px) {
   .home-info-faq {
-    grid-template-columns: minmax(0, 0.42fr) minmax(0, 1fr);
-    gap: clamp(2rem, 4vw, 3.5rem);
+    grid-template-columns: minmax(0, 0.9fr) minmax(0, 1.5fr);
+    gap: clamp(2.5rem, 5vw, 5rem);
     align-items: start;
+  }
+}
+
+@media (min-width: 1200px) {
+  .home-info-faq {
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1.6fr);
+    gap: clamp(3rem, 6vw, 6rem);
   }
 }
 

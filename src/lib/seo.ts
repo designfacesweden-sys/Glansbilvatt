@@ -2,7 +2,8 @@ import type { Metadata } from "next";
 import { SERVICES, SITE } from "@/data/site";
 
 export const SITE_URL =
-  process.env.NEXT_PUBLIC_SITE_URL?.replace(/\/$/, "") ?? "https://glansbilvatt.se";
+  process.env.NEXT_PUBLIC_SITE_URL?.replace(/\/$/, "") ??
+  "https://glansigbiltvatteskilstunaab.se";
 
 export const SEO_KEYWORDS = [
   "biltvätt",
