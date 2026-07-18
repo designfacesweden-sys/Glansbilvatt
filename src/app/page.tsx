@@ -14,7 +14,7 @@ import {
 export const metadata: Metadata = createPageMetadata({
   title: "Biltvätt & Bilrekond Eskilstuna",
   description:
-    "Professionell biltvätt, handtvätt och bilrekond i Eskilstuna. Boka tid online hos Glansbilvatt – invändig & utvändig tvätt, lackskydd, polering och bilvård.",
+    "Professionell biltvätt, handtvätt och bilrekond i Eskilstuna. Boka tid online hos Glansig Biltvätt – invändig & utvändig tvätt, lackskydd, polering och bilvård.",
   path: "/",
   keywords: [
     "biltvätt Eskilstuna",
@@ -33,7 +33,7 @@ export default function HomePage() {
           getBreadcrumbJsonLd([{ name: "Hem", path: "/" }]),
         ]}
       />
-      <section className="hero" aria-label="Glansbilvatt – biltvätt och bilrekond i Eskilstuna">
+      <section className="hero" aria-label="Glansig Biltvätt – biltvätt och bilrekond i Eskilstuna">
         <svg
           className="hero-watermark"
           viewBox="0 -80 1400 360"
@@ -46,17 +46,17 @@ export default function HomePage() {
             y="200"
             textAnchor="middle"
             dominantBaseline="middle"
-            fontSize="248"
+            fontSize="180"
             fontWeight="700"
             fontFamily="IBM Plex Sans, sans-serif"
           >
-            GLANSBILVÅRD
+            GLANSIG BILTVÄTT
           </text>
         </svg>
         <div className="hero-content">
           <div className="hero-eyebrow">
             <span className="hero-eyebrow-line" aria-hidden />
-            <span className="hero-eyebrow-label">Glansbilvatt · Eskilstuna</span>
+            <span className="hero-eyebrow-label">Glansig Biltvätt · Eskilstuna</span>
           </div>
           <h1 className="hero-title">
             <span className="hero-title-main">Biltvätt</span>
@@ -77,7 +77,7 @@ export default function HomePage() {
         <div className="hero-car-mobile" aria-hidden>
           <Image
             src="/hero-car.png"
-            alt="Professionell biltvätt och bilrekond i Eskilstuna hos Glansbilvatt"
+            alt="Professionell biltvätt och bilrekond i Eskilstuna hos Glansig Biltvätt"
             width={900}
             height={500}
             className="hero-car-mobile-img"

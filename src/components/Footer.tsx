@@ -91,7 +91,7 @@ export default function Footer() {
         <div className="footer-mid">
           <Link href="/" className="footer-brandmark">
             <LogoIcon size={40} className="footer-brandmark-logo" />
-            <span className="footer-brandmark-name">glansbilvatt</span>
+            <span className="footer-brandmark-name">Glansig Biltvätt</span>
           </Link>
 
           <div className="footer-mid-actions">

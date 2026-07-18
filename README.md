@@ -1,6 +1,6 @@
-# Glansbilvatt
+# Glansig Biltvätt
 
-Webbplats för Glansbilvatt – biltvätt & bilrekond i Eskilstuna.
+Webbplats för Glansig Biltvätt – biltvätt & bilrekond i Eskilstuna.
 
 ## Lokal utveckling
 

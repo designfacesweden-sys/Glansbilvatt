@@ -1,5 +1,5 @@
 export const SITE = {
-  name: "Glansbilvatt",
+  name: "Glansig Biltvätt",
   tagline: "Professionell handtvätt & rekond",
   city: "Eskilstuna",
   phone: "076-267 14 14",

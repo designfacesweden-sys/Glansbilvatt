@@ -26,7 +26,7 @@ async function sendViaResend(payload: BookingEmailPayload) {
   const { Resend } = await import("resend");
   const resend = new Resend(resendKey);
   const { error } = await resend.emails.send({
-    from: process.env.RESEND_FROM ?? "Glansbilvatt <onboarding@resend.dev>",
+    from: process.env.RESEND_FROM ?? "Glansig Biltvätt <onboarding@resend.dev>",
     to: process.env.RESEND_TO ?? SITE.bookingEmail,
     replyTo: payload.email,
     subject,
@@ -55,7 +55,7 @@ async function sendViaSmtp(payload: BookingEmailPayload) {
   });
 
   await transporter.sendMail({
-    from: process.env.SMTP_FROM ?? `Glansbilvatt <${user}>`,
+    from: process.env.SMTP_FROM ?? `Glansig Biltvätt <${user}>`,
     to: SITE.bookingEmail,
     replyTo: payload.email,
     subject,

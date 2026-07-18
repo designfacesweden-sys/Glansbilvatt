@@ -52,7 +52,7 @@ export default function HomeSeoSection() {
               Biltvätt och bilrekond i Eskilstuna
             </h2>
             <p className="home-info-lead">
-              Glansbilvatt erbjuder professionell biltvätt, handtvätt och bilrekond –
+              Glansig Biltvätt erbjuder professionell biltvätt, handtvätt och bilrekond –
               från snabb utvändig tvätt till fullständig rekonditionering med lackskydd
               och polering.
             </p>

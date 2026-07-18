@@ -7,12 +7,12 @@ import { SITE } from "@/data/site";
 export const metadata: Metadata = createPageMetadata({
   title: "Kontakt & Öppettider",
   description:
-    `Kontakta Glansbilvatt för biltvätt och bilrekond i Eskilstuna. ${SITE.address.full}. Öppettider mån–fre 08–18, lör 10–17. Ring ${SITE.phone} eller ${SITE.phoneSecondary}.`,
+    `Kontakta Glansig Biltvätt för biltvätt och bilrekond i Eskilstuna. ${SITE.address.full}. Öppettider mån–fre 08–18, lör 10–17. Ring ${SITE.phone} eller ${SITE.phoneSecondary}.`,
   path: "/kontakt",
   keywords: [
     "biltvätt Eskilstuna adress",
     "bilrekond Eskilstuna kontakt",
-    "Glansbilvatt öppettider",
+    "Glansig Biltvätt öppettider",
   ],
 });
 

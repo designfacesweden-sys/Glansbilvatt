@@ -83,7 +83,7 @@ function detailRow(label: string, value: string, link?: string) {
 export function buildBookingEmailText(payload: BookingEmailPayload) {
   return [
     "══════════════════════════════════════",
-    "  NY BOKNINGSFÖRFRÅGAN — GLANSBILVATT",
+    "  NY BOKNINGSFÖRFRÅGAN — GLANSIG BILTVÄTT",
     "══════════════════════════════════════",
     "",
     "BOKNING",
@@ -127,7 +127,7 @@ export function buildBookingEmailHtml(payload: BookingEmailPayload) {
         <table role="presentation" width="600" cellpadding="0" cellspacing="0" style="max-width:600px;width:100%;background:#ffffff;border-radius:12px;overflow:hidden;border:1px solid ${BORDER};">
           <tr>
             <td style="background:${BRAND_RED};padding:28px 32px;">
-              <p style="margin:0 0 6px;font-size:12px;font-weight:700;letter-spacing:0.14em;text-transform:uppercase;color:#f5d4d2;">Glansbilvatt</p>
+              <p style="margin:0 0 6px;font-size:12px;font-weight:700;letter-spacing:0.14em;text-transform:uppercase;color:#f5d4d2;">Glansig Biltvätt</p>
               <h1 style="margin:0;font-size:26px;line-height:1.2;font-weight:700;color:#ffffff;">Ny bokningsförfrågan</h1>
               <p style="margin:10px 0 0;font-size:14px;line-height:1.5;color:#f5d4d2;">En kund har skickat en bokning via webbplatsen.</p>
             </td>

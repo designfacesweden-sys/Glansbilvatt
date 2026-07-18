@@ -22,14 +22,14 @@ export const SEO_KEYWORDS = [
   "polering bil",
   "bilrekonditionering",
   "professionell biltvätt",
-  "Glansbilvatt",
+  "Glansig Biltvätt",
 ] as const;
 
 export const DEFAULT_TITLE =
-  "Biltvätt & Bilrekond Eskilstuna | Handtvätt & Rekond – Glansbilvatt";
+  "Biltvätt & Bilrekond Eskilstuna | Handtvätt & Rekond – Glansig Biltvätt";
 
 export const DEFAULT_DESCRIPTION =
-  "Glansbilvatt erbjuder professionell biltvätt, handtvätt och bilrekond i Eskilstuna. Boka tid online – invändig & utvändig tvätt, lackskydd, polering och bilvård.";
+  "Glansig Biltvätt erbjuder professionell biltvätt, handtvätt och bilrekond i Eskilstuna. Boka tid online – invändig & utvändig tvätt, lackskydd, polering och bilvård.";
 
 type PageMetaOptions = {
   title: string;
@@ -85,7 +85,7 @@ export function createPageMetadata({
           url: absoluteUrl("/hero-car.png"),
           width: 900,
           height: 500,
-          alt: "Professionell biltvätt och bilrekond i Eskilstuna – Glansbilvatt",
+          alt: "Professionell biltvätt och bilrekond i Eskilstuna – Glansig Biltvätt",
         },
       ],
     },
@@ -100,7 +100,7 @@ export function createPageMetadata({
 
 export const FAQ_ITEMS = [
   {
-    question: "Vad kostar biltvätt i Eskilstuna hos Glansbilvatt?",
+    question: "Vad kostar biltvätt i Eskilstuna hos Glansig Biltvätt?",
     answer:
       "Handtvätt utvändigt och invändigt startar från 300 kr. Komplett in- och utvändig tvätt från 499 kr. Se hela prislistan under Tjänster & priser för bilrekond, lackskydd, polering och tilläggstjänster.",
   },
@@ -115,7 +115,7 @@ export const FAQ_ITEMS = [
       "Välj tjänster på vår prislista, lägg till i kundvagnen och boka tid direkt online. Du kan också ringa oss på 076-267 14 14, 016-4003621 eller maila info@glansbilvatt.se.",
   },
   {
-    question: "Var ligger Glansbilvatt?",
+    question: "Var ligger Glansig Biltvätt?",
     answer:
       "Vi finns på Mått Johansson väg 36, 633 46 Eskilstuna. Lätt att hitta med bil – välkommen för biltvätt och bilvård.",
   },
