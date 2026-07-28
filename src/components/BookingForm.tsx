@@ -6,8 +6,8 @@ import { useCart } from "@/context/CartContext";
 import { SITE } from "@/data/site";
 import { type BookingEmailPayload } from "@/lib/booking-message";
 import {
-  FORM_SUBMIT_ACTIVATION_REQUIRED,
   sendBookingToEmail,
+  WEB3FORMS_NOT_CONFIGURED,
 } from "@/lib/send-booking-email";
 import {
   isValidEmail,
@@ -196,9 +196,9 @@ export default function BookingForm({ variant = "page", onClose }: BookingFormPr
       setSubmitted(true);
     } catch (error) {
       const message = error instanceof Error ? error.message : "";
-      if (message === FORM_SUBMIT_ACTIVATION_REQUIRED) {
+      if (message === WEB3FORMS_NOT_CONFIGURED) {
         setSubmitError(
-          "Nästan klart: öppna glansbiltvatt@gmail.com, klicka aktiveringslänken från FormSubmit, boka sedan igen. Kund och ägare får mejl därefter.",
+          "Bokningsmejl är inte aktiverat. Saknar NEXT_PUBLIC_WEB3FORMS_ACCESS_KEY.",
         );
       } else {
         setSubmitError(
@@ -231,26 +231,29 @@ export default function BookingForm({ variant = "page", onClose }: BookingFormPr
     : "booking-form-card";
 
   const successContent = (
-    <div className={`${cardClass} booking-form-card--success`}>
-      <h1 className="booking-form-title">Tack för din bokning!</h1>
-      <p className="booking-form-success-text">
-        Vi har tagit emot din förfrågan för {data.registration} den{" "}
-        {data.date ? formatDayShort(data.date) : ""} kl. {data.time}. Vi återkommer via{" "}
-        {data.email} eller {data.phone}.
-      </p>
-      {embedded ? (
-        <button
-          type="button"
-          className="booking-form-btn booking-form-btn--primary booking-form-btn--full"
-          onClick={onClose}
-        >
-          Stäng
-        </button>
-      ) : (
-        <Link href="/" className="booking-form-btn booking-form-btn--primary booking-form-btn--full">
-          Till startsidan
-        </Link>
-      )}
+    <div
+      className={`booking-success-overlay ${embedded ? "booking-success-overlay--embedded" : ""}`}
+      role="status"
+      aria-live="polite"
+    >
+      <div className="booking-success-overlay-inner">
+        <p className="booking-success-overlay-text">
+          Tack för din bokning! Boknings bekräftelsen kommer på mejl.
+        </p>
+        {embedded ? (
+          <button
+            type="button"
+            className="booking-form-btn booking-form-btn--primary booking-form-btn--full"
+            onClick={onClose}
+          >
+            Stäng
+          </button>
+        ) : (
+          <Link href="/" className="booking-form-btn booking-form-btn--primary booking-form-btn--full">
+            Till startsidan
+          </Link>
+        )}
+      </div>
     </div>
   );
 
