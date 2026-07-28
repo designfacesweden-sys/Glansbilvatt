@@ -13,16 +13,17 @@ This is a Next.js app. Host it on **Vercel**, not GitHub Pages.
 | Name | Value |
 |------|--------|
 | `NEXT_PUBLIC_SITE_URL` | `https://glansigbiltvatteskilstunaab.se` |
-| `NEXT_PUBLIC_WEB3FORMS_ACCESS_KEY` | Your key from step below |
+| `NEXT_PUBLIC_WEB3FORMS_ACCESS_KEY` | Optional backup (owner-only) |
 
-### Booking emails (free, ~2 minutes, once)
+### Booking emails (free forever)
 
-1. Open [web3forms.com](https://web3forms.com)
-2. Enter **`glansbiltvatt@gmail.com`** and create a form
-3. Copy the **Access Key** into `.env.local` and Vercel (same variable name as above)
-4. Redeploy if the site is already live
+Bookings use **FormSubmit** (no API key):
 
-Each booking from **Tjänster → Boka tid** sends the full order to your Gmail and a confirmation to the customer. No SMTP passwords, no extra server setup.
+1. Submit one test booking from **Tjänster → Boka tid**
+2. Open **`glansbiltvatt@gmail.com`** and click FormSubmit’s activation link (once)
+3. Book again — owner gets the order, customer gets a confirmation
+
+Optional: keep `NEXT_PUBLIC_WEB3FORMS_ACCESS_KEY` as an owner-only backup.
 
 6. Click **Deploy** on Vercel
 
@@ -41,4 +42,4 @@ Each booking from **Tjänster → Boka tid** sends the full order to your Gmail 
 ## 3. After deploy
 
 - Site URL: `https://glansigbiltvatteskilstunaab.se`
-- Bookings need `NEXT_PUBLIC_WEB3FORMS_ACCESS_KEY` (see above)
+- Bookings: activate FormSubmit once via `glansbiltvatt@gmail.com` (see above)
