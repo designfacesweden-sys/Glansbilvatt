@@ -53,10 +53,23 @@ export function isValidBookingContact(fields: {
   registration: string;
   email: string;
   phone: string;
+  customerName?: string;
 }) {
+  const nameOk =
+    fields.customerName === undefined ||
+    fields.customerName.trim().length >= 2;
   return (
+    nameOk &&
     isValidRegistration(fields.registration) &&
     isValidEmail(fields.email) &&
     isValidPhone(fields.phone)
   );
+}
+
+export function sanitizeCustomerName(value: string) {
+  return value.replace(/\s+/g, " ").trim().slice(0, 80);
+}
+
+export function isValidCustomerName(value: string) {
+  return sanitizeCustomerName(value).length >= 2;
 }

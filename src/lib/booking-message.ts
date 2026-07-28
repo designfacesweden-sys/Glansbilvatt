@@ -1,6 +1,7 @@
 import { SITE } from "@/data/site";
 
 export type BookingEmailPayload = {
+  customerName: string;
   registration: string;
   email: string;
   phone: string;
@@ -115,6 +116,7 @@ export function buildBookingEmailText(payload: BookingEmailPayload) {
     `Tid                  ${payload.time}`,
     ``,
     `KUND`,
+    `Namn                 ${payload.customerName}`,
     `E-post               ${payload.email}`,
     `Telefon              ${payload.phone}`,
     ``,
@@ -133,7 +135,7 @@ export function buildBookingEmailText(payload: BookingEmailPayload) {
 /** Customer-facing plain text (Web3Forms autoresponse). */
 export function buildCustomerConfirmationText(payload: BookingEmailPayload) {
   return [
-    `Hej!`,
+    `Hej ${payload.customerName}!`,
     ``,
     `Tack för din bokningsförfrågan hos ${SITE.name}.`,
     `Vi har tagit emot den och återkommer så snart vi kan.`,
@@ -230,6 +232,7 @@ export function buildBookingEmailHtml(payload: BookingEmailPayload) {
 
     <p style="margin:24px 6px 8px;font-size:11px;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:${BRAND};">Kund</p>
     <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="margin:0 6px;">
+      ${contactRow("Namn", payload.customerName)}
       ${contactRow("E-post", payload.email, `mailto:${escapeHtml(payload.email)}`)}
       ${contactRow("Telefon", payload.phone, phoneHref)}
     </table>
@@ -264,7 +267,7 @@ export function buildBookingEmailHtml(payload: BookingEmailPayload) {
 export function buildCustomerConfirmationHtml(payload: BookingEmailPayload) {
   const body = `
     <p style="margin:20px 6px 0;font-size:15px;line-height:1.65;color:${INK};">
-      Vi har tagit emot din bokningsförfrågan och återkommer så snart vi kan med bekräftelse.
+      Hej ${escapeHtml(payload.customerName)}! Vi har tagit emot din bokningsförfrågan och återkommer så snart vi kan med bekräftelse.
     </p>
 
     <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="margin-top:18px;">
@@ -314,6 +317,7 @@ export function buildCustomerConfirmationHtml(payload: BookingEmailPayload) {
 /** Structured fields for Web3Forms’ default email layout (clear Swedish labels). */
 export function buildWeb3FormsFields(payload: BookingEmailPayload) {
   return {
+    Namn: payload.customerName,
     Registreringsnummer: payload.registration,
     Biltyp: payload.carType,
     Datum: formatDateLabel(payload.date),

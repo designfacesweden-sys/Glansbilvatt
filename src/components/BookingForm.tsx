@@ -6,18 +6,19 @@ import { useCart } from "@/context/CartContext";
 import { SITE } from "@/data/site";
 import { type BookingEmailPayload } from "@/lib/booking-message";
 import {
-  FORM_SUBMIT_ACTIVATION_REQUIRED,
-  sendBookingToEmail,
-  WEB3FORMS_NOT_CONFIGURED,
-} from "@/lib/send-booking-email";
-import {
+  isValidCustomerName,
   isValidEmail,
   isValidPhone,
   isValidRegistration,
+  sanitizeCustomerName,
   sanitizeEmail,
   sanitizePhone,
   sanitizeRegistration,
 } from "@/lib/booking-validation";
+import {
+  sendBookingToEmail,
+  WEB3FORMS_NOT_CONFIGURED,
+} from "@/lib/send-booking-email";
 
 const TOTAL_STEPS = 5;
 const CAR_TYPES = ["SUV", "Mellan"] as const;
@@ -34,6 +35,7 @@ const TIME_SLOTS = (() => {
 type CarType = (typeof CAR_TYPES)[number];
 
 type BookingData = {
+  customerName: string;
   registration: string;
   email: string;
   phone: string;
@@ -43,6 +45,7 @@ type BookingData = {
 };
 
 const initialData: BookingData = {
+  customerName: "",
   registration: "",
   email: "",
   phone: "",
@@ -149,6 +152,7 @@ export default function BookingForm({ variant = "page", onClose }: BookingFormPr
     switch (step) {
       case 1:
         return (
+          isValidCustomerName(data.customerName) &&
           isValidRegistration(data.registration) &&
           isValidEmail(data.email) &&
           isValidPhone(data.phone)
@@ -177,6 +181,7 @@ export default function BookingForm({ variant = "page", onClose }: BookingFormPr
     setSubmitError(null);
 
     const payload: BookingEmailPayload = {
+      customerName: sanitizeCustomerName(data.customerName),
       registration: formatRegistrationDisplay(data.registration),
       email: sanitizeEmail(data.email),
       phone: sanitizePhone(data.phone),
@@ -200,10 +205,6 @@ export default function BookingForm({ variant = "page", onClose }: BookingFormPr
       if (message === WEB3FORMS_NOT_CONFIGURED) {
         setSubmitError(
           "Bokningsmejl är inte aktiverat. Saknar NEXT_PUBLIC_WEB3FORMS_ACCESS_KEY.",
-        );
-      } else if (message === FORM_SUBMIT_ACTIVATION_REQUIRED) {
-        setSubmitError(
-          "Nästan klart: öppna glansbiltvatt@gmail.com (kolla skräppost), klicka FormSubmit-länken en gång, boka sedan igen — då får kunden bekräftelse på mejl.",
         );
       } else {
         setSubmitError(
@@ -296,6 +297,23 @@ export default function BookingForm({ variant = "page", onClose }: BookingFormPr
         <div className="booking-form-body">
           {step === 1 && (
             <>
+              <label className="booking-form-field">
+                <span className="booking-form-label">Namn</span>
+                <input
+                  type="text"
+                  className={`booking-form-input${data.customerName && !isValidCustomerName(data.customerName) ? " booking-form-input--invalid" : ""}`}
+                  placeholder="För- och efternamn"
+                  value={data.customerName}
+                  onChange={(e) => update("customerName", e.target.value)}
+                  onBlur={() => update("customerName", sanitizeCustomerName(data.customerName))}
+                  autoComplete="name"
+                  maxLength={80}
+                  aria-invalid={data.customerName.length > 0 && !isValidCustomerName(data.customerName)}
+                />
+                {data.customerName.length > 0 && !isValidCustomerName(data.customerName) && (
+                  <span className="booking-form-field-hint">Ange ditt namn (minst 2 tecken).</span>
+                )}
+              </label>
               <label className="booking-form-field">
                 <span className="booking-form-label">Registreringsnummer</span>
                 <input
@@ -469,6 +487,10 @@ export default function BookingForm({ variant = "page", onClose }: BookingFormPr
               <p className="booking-form-section-title">Bekräfta din bokning</p>
               <div className="booking-form-summary">
                 <dl className="booking-form-summary-list">
+                  <div>
+                    <dt>Namn</dt>
+                    <dd>{data.customerName}</dd>
+                  </div>
                   <div>
                     <dt>Registreringsnummer</dt>
                     <dd>{data.registration}</dd>

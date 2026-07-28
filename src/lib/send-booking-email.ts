@@ -3,12 +3,10 @@ import {
   buildBookingEmailText,
   buildCustomerConfirmationText,
   buildWeb3FormsFields,
-  formatDateLabel,
   type BookingEmailPayload,
 } from "@/lib/booking-message";
 
 export const WEB3FORMS_NOT_CONFIGURED = "WEB3FORMS_NOT_CONFIGURED";
-export const FORM_SUBMIT_ACTIVATION_REQUIRED = "FORM_SUBMIT_ACTIVATION_REQUIRED";
 
 function bookingSubject(payload: BookingEmailPayload) {
   const date = new Date(payload.date);
@@ -18,7 +16,28 @@ function bookingSubject(payload: BookingEmailPayload) {
   return `Ny bokning – ${payload.registration} · ${short} ${payload.time}`;
 }
 
-/** Owner inbox via Web3Forms (proven working on your domain). */
+/** Owner + customer via /api/booking (Gmail SMTP). */
+async function sendViaSmtpApi(payload: BookingEmailPayload) {
+  try {
+    const response = await fetch("/api/booking", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(payload),
+    });
+
+    const result = (await response.json().catch(() => null)) as {
+      ok?: boolean;
+      via?: string;
+      code?: string;
+    } | null;
+
+    return Boolean(response.ok && result?.via === "smtp");
+  } catch {
+    return false;
+  }
+}
+
+/** Owner inbox via Web3Forms. */
 async function sendOwnerViaWeb3Forms(payload: BookingEmailPayload) {
   const accessKey = process.env.NEXT_PUBLIC_WEB3FORMS_ACCESS_KEY?.trim();
   if (!accessKey) {
@@ -29,7 +48,7 @@ async function sendOwnerViaWeb3Forms(payload: BookingEmailPayload) {
   formData.append("access_key", accessKey);
   formData.append("subject", bookingSubject(payload));
   formData.append("from_name", `${SITE.name} – Bokning`);
-  formData.append("name", payload.registration);
+  formData.append("name", payload.customerName);
   formData.append("email", payload.email);
   formData.append("phone", payload.phone);
   formData.append("message", buildBookingEmailText(payload));
@@ -50,46 +69,17 @@ async function sendOwnerViaWeb3Forms(payload: BookingEmailPayload) {
 }
 
 /**
- * Customer confirmation.
- * Prefer /api/booking (SMTP or FormSubmit server POST with _autoresponse).
- * FormSubmit's free auto-reply does NOT work with their /ajax/ endpoint.
+ * Customer confirmation via FormSubmit classic form POST (not /ajax/).
+ * Free auto-reply to the email field. Requires one-time activation in owner inbox.
  */
-async function sendCustomerConfirmation(payload: BookingEmailPayload) {
-  const response = await fetch("/api/booking", {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify(payload),
-  });
-
-  if (response.ok) {
-    const result = (await response.json().catch(() => null)) as { via?: string } | null;
-    // SMTP already emailed the owner too — skip duplicate Web3Forms if you want;
-    // we still send Web3Forms separately for the nice owner template you already get.
-    return result?.via ?? "api";
-  }
-
-  const result = (await response.json().catch(() => null)) as {
-    code?: string;
-    error?: string;
-  } | null;
-
-  if (result?.code === "FORM_SUBMIT_ACTIVATION_REQUIRED") {
-    throw new Error(FORM_SUBMIT_ACTIVATION_REQUIRED);
-  }
-
-  // Last resort: classic form POST in a hidden iframe (not AJAX)
-  await sendCustomerViaFormIframe(payload);
-  return "iframe";
-}
-
-function sendCustomerViaFormIframe(payload: BookingEmailPayload): Promise<void> {
-  return new Promise((resolve, reject) => {
+function sendCustomerViaFormSubmit(payload: BookingEmailPayload): Promise<void> {
+  return new Promise((resolve) => {
     if (typeof document === "undefined") {
-      reject(new Error("FormSubmit requires a browser"));
+      resolve();
       return;
     }
 
-    const iframeName = `customer_confirm_${Date.now()}`;
+    const iframeName = `customer_mail_${Date.now()}`;
     const iframe = document.createElement("iframe");
     iframe.name = iframeName;
     iframe.setAttribute("aria-hidden", "true");
@@ -104,20 +94,14 @@ function sendCustomerViaFormIframe(payload: BookingEmailPayload): Promise<void> 
 
     const fields = buildWeb3FormsFields(payload);
     const values: Record<string, string> = {
-      _subject: `Ny bokning – ${payload.registration}`,
+      _subject: `Kundbekräftelse – ${payload.registration}`,
       _template: "table",
       _autoresponse: buildCustomerConfirmationText(payload),
-      _replyto: payload.email,
+      _replyto: SITE.bookingEmail,
       email: payload.email,
-      name: payload.registration,
-      Registreringsnummer: fields.Registreringsnummer,
-      Biltyp: fields.Biltyp,
-      Datum: formatDateLabel(payload.date),
-      Tid: fields.Tid,
-      Telefon: fields.Telefon,
-      Tjänster: fields.Tjänster,
-      Totalt: fields.Totalt,
-      message: buildBookingEmailText(payload),
+      name: payload.customerName,
+      ...fields,
+      message: buildCustomerConfirmationText(payload),
     };
 
     for (const [name, value] of Object.entries(values)) {
@@ -128,47 +112,26 @@ function sendCustomerViaFormIframe(payload: BookingEmailPayload): Promise<void> 
       form.appendChild(input);
     }
 
-    const cleanup = () => {
+    const done = () => {
       window.clearTimeout(timer);
       form.remove();
       iframe.remove();
-    };
-
-    const done = () => {
-      cleanup();
       resolve();
     };
 
-    const timer = window.setTimeout(done, 4500);
+    const timer = window.setTimeout(done, 4000);
     iframe.addEventListener("load", done, { once: true });
     document.body.appendChild(form);
-    form.addEventListener(
-      "error",
-      () => {
-        cleanup();
-        reject(new Error("FormSubmit iframe failed"));
-      },
-      { once: true },
-    );
     form.submit();
   });
 }
 
 /**
- * Owner (Web3Forms) + customer confirmation (API / FormSubmit auto-reply).
+ * Prefer SMTP (owner + customer). Fallback: Web3Forms owner + FormSubmit customer auto-reply.
  */
 export async function sendBookingToEmail(payload: BookingEmailPayload): Promise<void> {
-  await sendOwnerViaWeb3Forms(payload);
+  if (await sendViaSmtpApi(payload)) return;
 
-  try {
-    await sendCustomerConfirmation(payload);
-  } catch (error) {
-    if (error instanceof Error && error.message === FORM_SUBMIT_ACTIVATION_REQUIRED) {
-      throw error;
-    }
-    console.warn("[booking] Customer confirmation failed", error);
-    throw new Error(
-      "Bokningen skickades till verkstaden, men kundbekräftelsen kunde inte skickas. Försök igen eller ring oss.",
-    );
-  }
+  await sendOwnerViaWeb3Forms(payload);
+  await sendCustomerViaFormSubmit(payload);
 }

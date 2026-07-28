@@ -4,22 +4,21 @@ import {
   buildBookingEmailText,
   buildCustomerConfirmationHtml,
   buildCustomerConfirmationText,
-  buildWeb3FormsFields,
-  formatDateLabel,
   type BookingEmailPayload,
 } from "@/lib/booking-message";
-import { isValidBookingContact } from "@/lib/booking-validation";
-
-export type { BookingEmailPayload };
+import { isValidBookingContact, isValidCustomerName } from "@/lib/booking-validation";
 
 function isValidPayload(body: unknown): body is BookingEmailPayload {
   if (!body || typeof body !== "object") return false;
   const data = body as Record<string, unknown>;
   return (
+    typeof data.customerName === "string" &&
+    isValidCustomerName(data.customerName) &&
     typeof data.registration === "string" &&
     typeof data.email === "string" &&
     typeof data.phone === "string" &&
     isValidBookingContact({
+      customerName: data.customerName,
       registration: data.registration,
       email: data.email,
       phone: data.phone,
@@ -33,6 +32,7 @@ function isValidPayload(body: unknown): body is BookingEmailPayload {
   );
 }
 
+/** Sends owner order + customer confirmation via Gmail SMTP (free). */
 async function sendBothViaSmtp(payload: BookingEmailPayload) {
   const user = process.env.SMTP_USER?.trim();
   const pass = process.env.SMTP_PASS?.trim();
@@ -53,7 +53,7 @@ async function sendBothViaSmtp(payload: BookingEmailPayload) {
     from,
     to: ownerTo,
     replyTo: payload.email,
-    subject: `Ny bokning – ${payload.registration}`,
+    subject: `Ny bokning – ${payload.registration} (${payload.customerName})`,
     text: buildBookingEmailText(payload),
     html: buildBookingEmailHtml(payload),
   });
@@ -70,87 +70,28 @@ async function sendBothViaSmtp(payload: BookingEmailPayload) {
   return true;
 }
 
-/** FormSubmit normal POST (not /ajax/) so `_autoresponse` can reach the customer. */
-async function sendCustomerViaFormSubmit(payload: BookingEmailPayload) {
-  const fields = buildWeb3FormsFields(payload);
-  const body = new URLSearchParams({
-    _subject: `Ny bokning – ${payload.registration}`,
-    _template: "table",
-    _autoresponse: buildCustomerConfirmationText(payload),
-    _replyto: payload.email,
-    email: payload.email,
-    name: payload.registration,
-    Registreringsnummer: fields.Registreringsnummer,
-    Biltyp: fields.Biltyp,
-    Datum: fields.Datum,
-    Tid: fields.Tid,
-    Telefon: fields.Telefon,
-    Tjänster: fields.Tjänster,
-    Totalt: fields.Totalt,
-    message: buildBookingEmailText(payload),
-  });
-
-  const response = await fetch(
-    `https://formsubmit.co/${encodeURIComponent(SITE.bookingEmail)}`,
-    {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/x-www-form-urlencoded",
-        Accept: "text/html,application/json",
-      },
-      body: body.toString(),
-      redirect: "manual",
-    },
-  );
-
-  const text = await response.text().catch(() => "");
-  const lowered = text.toLowerCase();
-
-  if (
-    lowered.includes("activate") ||
-    lowered.includes("confirm your email") ||
-    lowered.includes("activation")
-  ) {
-    throw new Error("FORM_SUBMIT_ACTIVATION_REQUIRED");
-  }
-
-  // 200 / 302 / 303 typically means FormSubmit accepted the submission
-  if (response.status >= 400 && response.status !== 302 && response.status !== 303) {
-    throw new Error(`FormSubmit failed (${response.status})`);
-  }
-}
-
 export async function POST(request: Request) {
   try {
     const body = await request.json();
     if (!isValidPayload(body)) {
-      return Response.json({ error: "Ogiltiga bokningsuppgifter." }, { status: 400 });
+      return Response.json({ error: "Ogiltiga bokningsuppgifter.", code: "INVALID" }, { status: 400 });
     }
 
     if (await sendBothViaSmtp(body)) {
       return Response.json({ ok: true, via: "smtp" });
     }
 
-    await sendCustomerViaFormSubmit(body);
-    return Response.json({ ok: true, via: "formsubmit" });
+    // No SMTP configured — client will use Web3Forms for the owner.
+    return Response.json({ ok: false, code: "NO_SMTP" }, { status: 200 });
   } catch (error) {
-    const message = error instanceof Error ? error.message : "";
     console.error("[api/booking]", error);
-
-    if (message === "FORM_SUBMIT_ACTIVATION_REQUIRED") {
-      return Response.json(
-        {
-          error:
-            "Aktivera kundmejl: öppna glansbiltvatt@gmail.com och klicka länken från FormSubmit, boka sedan igen.",
-          code: "FORM_SUBMIT_ACTIVATION_REQUIRED",
-        },
-        { status: 503 },
-      );
-    }
-
     return Response.json(
-      { error: "Kunde inte skicka kundbekräftelsen.", code: "SEND_FAILED" },
-      { status: 500 },
+      {
+        error: "Kunde inte skicka mejl via SMTP.",
+        code: "SMTP_FAILED",
+        detail: error instanceof Error ? error.message : "unknown",
+      },
+      { status: 502 },
     );
   }
 }
