@@ -5,7 +5,10 @@ import { useMemo, useState } from "react";
 import { useCart } from "@/context/CartContext";
 import { SITE } from "@/data/site";
 import { type BookingEmailPayload } from "@/lib/booking-message";
-import { sendBookingToEmail } from "@/lib/send-booking-email";
+import {
+  sendBookingToEmail,
+  WEB3FORMS_NOT_CONFIGURED,
+} from "@/lib/send-booking-email";
 import {
   isValidEmail,
   isValidPhone,
@@ -193,12 +196,16 @@ export default function BookingForm({ variant = "page", onClose }: BookingFormPr
       setSubmitted(true);
     } catch (error) {
       const message = error instanceof Error ? error.message : "";
-      if (message.toLowerCase().includes("activation")) {
+      if (message === WEB3FORMS_NOT_CONFIGURED) {
         setSubmitError(
-          "Aktivera bokningsmejlet: öppna Glansbilvatt@gmail.com och klicka länken från FormSubmit (skickad nu). Försök boka igen efter det.",
+          "Bokningsmejl är inte aktiverat än. Sätt NEXT_PUBLIC_WEB3FORMS_ACCESS_KEY (gratis på web3forms.com med glansbiltvatt@gmail.com).",
         );
       } else {
-        setSubmitError("Kunde inte skicka bokningen. Försök igen eller ring oss.");
+        setSubmitError(
+          message && message.length < 120
+            ? message
+            : "Kunde inte skicka bokningen. Försök igen eller ring oss.",
+        );
       }
     } finally {
       setSubmitting(false);
