@@ -6,6 +6,7 @@ import { useCart } from "@/context/CartContext";
 import { SITE } from "@/data/site";
 import { type BookingEmailPayload } from "@/lib/booking-message";
 import {
+  FORM_SUBMIT_ACTIVATION_REQUIRED,
   sendBookingToEmail,
   WEB3FORMS_NOT_CONFIGURED,
 } from "@/lib/send-booking-email";
@@ -200,9 +201,13 @@ export default function BookingForm({ variant = "page", onClose }: BookingFormPr
         setSubmitError(
           "Bokningsmejl är inte aktiverat. Saknar NEXT_PUBLIC_WEB3FORMS_ACCESS_KEY.",
         );
+      } else if (message === FORM_SUBMIT_ACTIVATION_REQUIRED) {
+        setSubmitError(
+          "Nästan klart: öppna glansbiltvatt@gmail.com (kolla skräppost), klicka FormSubmit-länken en gång, boka sedan igen — då får kunden bekräftelse på mejl.",
+        );
       } else {
         setSubmitError(
-          message && message.length < 160
+          message && message.length < 180
             ? message
             : "Kunde inte skicka bokningen. Försök igen eller ring oss.",
         );
