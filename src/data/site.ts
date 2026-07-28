@@ -11,7 +11,7 @@ export const SITE = {
     { number: "016-4003621", href: "tel:+46164003621" },
   ],
   email: "info@glansbilvatt.se",
-  bookingEmail: "glansbiltvatt@gmail.com",
+  bookingEmail: "glansigbiltvatt@gmail.com",
   address: {
     street: "Mått Johansson väg 36",
     postalCode: "633 46",
