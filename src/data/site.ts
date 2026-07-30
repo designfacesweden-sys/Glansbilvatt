@@ -286,6 +286,10 @@ export type Campaign = {
   originalPrice: string;
   campaignPrice: string;
   description: string;
+  /** Service id on /tjanster to highlight and auto-add */
+  serviceId: number;
+  /** Query value for /tjanster?kampanj=… */
+  slug: string;
   validUntil?: string;
   ctaText: string;
   ctaLink: string;
@@ -300,7 +304,9 @@ export const CAMPAIGN: Campaign = {
   campaignPrice: "1 495 kr",
   description:
     "Just nu 1 495 kr (Ord. pris 3 000 kr) Inklusive en anpassad polering, noggrann vaxning och en detaljerad Rekond!",
+  serviceId: 11,
+  slug: "helrekond",
   validUntil: undefined,
   ctaText: "Hämta Erbjudandet",
-  ctaLink: "/tjanster",
+  ctaLink: "/tjanster?kampanj=helrekond",
 };

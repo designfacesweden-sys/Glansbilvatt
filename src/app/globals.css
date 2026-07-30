@@ -1551,6 +1551,78 @@ svg {
   transform: translateY(-2px);
 }
 
+.service-card--campaign {
+  border-color: #e30613;
+  box-shadow: 0 10px 28px rgba(227, 6, 19, 0.14);
+  background: linear-gradient(180deg, #fff7f7 0%, #ffffff 42%);
+  outline: 2px solid rgba(227, 6, 19, 0.35);
+  outline-offset: 0;
+}
+
+.service-card--campaign-selected {
+  outline-color: #e30613;
+}
+
+.service-card-badge {
+  align-self: flex-start;
+  margin: 0 0 0.15rem;
+  padding: 0.2rem 0.55rem;
+  border-radius: 999px;
+  background: #e30613;
+  color: #fff;
+  font-size: 0.6875rem;
+  font-weight: 800;
+  letter-spacing: 0.06em;
+}
+
+.service-card-price--campaign {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 0.1rem;
+  white-space: normal;
+}
+
+.service-card-price-old {
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: #8a8a8a;
+  text-decoration: line-through;
+}
+
+.service-card-price-new {
+  font-size: 1.05rem;
+  font-weight: 800;
+  color: #e30613;
+}
+
+.services-campaign-banner {
+  margin: 1rem 0 0;
+  padding: 0.75rem 1rem;
+  border-radius: 10px;
+  background: #fff4f4;
+  border: 1px solid rgba(227, 6, 19, 0.25);
+  color: #1a1a1a;
+  font-size: 0.9375rem;
+  line-height: 1.45;
+}
+
+.services-campaign-banner-price {
+  color: #e30613;
+  font-weight: 800;
+}
+
+.services-campaign-banner-old {
+  color: #777;
+  text-decoration: line-through;
+}
+
+.services-catbar-link--active {
+  background: #e30613;
+  border-color: #e30613;
+  color: #fff;
+}
+
 .service-card-top {
   display: flex;
   align-items: center;

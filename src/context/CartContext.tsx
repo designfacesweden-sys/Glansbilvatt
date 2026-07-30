@@ -18,10 +18,12 @@ export type CartItem = {
 type CartContextValue = {
   items: CartItem[];
   addToCart: (service: Service) => void;
+  upsertService: (service: Service) => void;
   removeFromCart: (serviceId: number) => void;
   clearCart: () => void;
   isInCart: (serviceId: number) => boolean;
   totalCount: number;
+  hydrated: boolean;
 };
 
 const CartContext = createContext<CartContextValue | null>(null);
@@ -61,7 +63,20 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
         return prev.map((item) =>
           item.service.id === service.id
             ? { ...item, quantity: item.quantity + 1 }
-            : item
+            : item,
+        );
+      }
+      return [...prev, { service, quantity: 1 }];
+    });
+  }, []);
+
+  /** Add service or refresh its data without changing quantity (used for campaigns). */
+  const upsertService = useCallback((service: Service) => {
+    setItems((prev) => {
+      const existing = prev.find((item) => item.service.id === service.id);
+      if (existing) {
+        return prev.map((item) =>
+          item.service.id === service.id ? { ...item, service } : item,
         );
       }
       return [...prev, { service, quantity: 1 }];
@@ -88,12 +103,23 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
     () => ({
       items,
       addToCart,
+      upsertService,
       removeFromCart,
       clearCart,
       isInCart,
       totalCount,
+      hydrated,
     }),
-    [items, addToCart, removeFromCart, clearCart, isInCart, totalCount]
+    [
+      items,
+      addToCart,
+      upsertService,
+      removeFromCart,
+      clearCart,
+      isInCart,
+      totalCount,
+      hydrated,
+    ],
   );
 
   return <CartContext.Provider value={value}>{children}</CartContext.Provider>;
