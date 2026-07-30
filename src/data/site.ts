@@ -291,16 +291,16 @@ export type Campaign = {
   ctaLink: string;
 };
 
-/** Redigera kampanjpriser här – visas som popup vid första besök */
+/** Redigera kampanjpriser här – visas som popup vid sidladdning */
 export const CAMPAIGN: Campaign = {
   active: true,
-  title: "Vårkampanj!",
-  subtitle: "In & utvändig tvätt",
-  originalPrice: "499 kr",
-  campaignPrice: "449 kr",
+  title: "50% RABATT",
+  subtitle: "PÅ HELREKOND",
+  originalPrice: "3 000 kr",
+  campaignPrice: "1 495 kr",
   description:
-    "Boka in- och utvändig handtvätt till kampanjpris. Gäller t.o.m. 31 augusti 2026.",
-  validUntil: "2026-08-31",
-  ctaText: "Boka nu",
+    "Just nu 1 495 kr (Ord. pris 3 000 kr) Inklusive en anpassad polering, noggrann vaxning och en detaljerad Rekond!",
+  validUntil: undefined,
+  ctaText: "Hämta Erbjudandet",
   ctaLink: "/tjanster",
 };
