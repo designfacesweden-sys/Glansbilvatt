@@ -135,10 +135,10 @@ export function buildBookingEmailText(payload: BookingEmailPayload) {
 /** Customer-facing plain text (Web3Forms autoresponse). */
 export function buildCustomerConfirmationText(payload: BookingEmailPayload) {
   return [
-    `Hej ${payload.customerName}!`,
+    `Bekräftelse – din bokning hos ${SITE.name}`,
     ``,
-    `Din tid är bokad hos ${SITE.name}.`,
-    `Det här är din bekräftelse.`,
+    `Hej ${payload.customerName}!`,
+    `Din tid är bokad.`,
     ``,
     `DIN BOKNING`,
     `Registreringsnummer  ${payload.registration}`,
