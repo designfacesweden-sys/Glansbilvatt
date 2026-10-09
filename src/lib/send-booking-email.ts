@@ -125,7 +125,7 @@ async function sendViaFormSubmitAjax(
     const needsActivation = /activat/i.test(raw);
     throw new Error(
       needsActivation
-        ? "Bekräftelsemejlet är inte aktiverat. Öppna glansigbiltvatt@gmail.com och klicka på länken från FormSubmit, och boka sedan igen."
+        ? "Bekräftelsemejlet är inte aktiverat. Öppna glansbiltvatt@gmail.com och klicka på länken från FormSubmit, och boka sedan igen."
         : raw && raw.length < 180
           ? raw
           : "Kunde inte skicka bekräftelsemejl. Kontrollera skräppost eller ring oss.",

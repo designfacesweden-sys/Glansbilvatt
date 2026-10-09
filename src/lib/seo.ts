@@ -112,7 +112,7 @@ export const FAQ_ITEMS = [
   {
     question: "Hur bokar jag tid för handtvätt eller bilrekond?",
     answer:
-      "Välj tjänster på vår prislista, lägg till i kundvagnen och boka tid direkt online. Du kan också ringa oss på 076-267 14 14, 016-4003621 eller maila info@glansbilvatt.se.",
+      `Välj tjänster på vår prislista, lägg till i kundvagnen och boka tid direkt online. Du kan också ringa oss på 076-267 14 14, 016-4003621 eller maila ${SITE.email}.`,
   },
   {
     question: "Var ligger Glansig Biltvätt?",
