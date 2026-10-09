@@ -137,14 +137,15 @@ export function buildCustomerConfirmationText(payload: BookingEmailPayload) {
   return [
     `Hej ${payload.customerName}!`,
     ``,
-    `Tack för din bokningsförfrågan hos ${SITE.name}.`,
-    `Vi har tagit emot den och återkommer så snart vi kan.`,
+    `Din tid är bokad hos ${SITE.name}.`,
+    `Det här är din bekräftelse.`,
     ``,
     `DIN BOKNING`,
     `Registreringsnummer  ${payload.registration}`,
     `Biltyp               ${payload.carType}`,
     `Datum                ${formatDateLabel(payload.date)}`,
     `Tid                  ${payload.time}`,
+    `Adress               ${SITE.address.full}`,
     ``,
     `VALDA TJÄNSTER`,
     ...servicesLines(payload).map((line) => `• ${line}`),
@@ -267,7 +268,7 @@ export function buildBookingEmailHtml(payload: BookingEmailPayload) {
 export function buildCustomerConfirmationHtml(payload: BookingEmailPayload) {
   const body = `
     <p style="margin:20px 6px 0;font-size:15px;line-height:1.65;color:${INK};">
-      Hej ${escapeHtml(payload.customerName)}! Vi har tagit emot din bokningsförfrågan och återkommer så snart vi kan med bekräftelse.
+      Hej ${escapeHtml(payload.customerName)}! Din tid är bokad hos ${escapeHtml(SITE.name)}. Det här är din bekräftelse.
     </p>
 
     <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="margin-top:18px;">
@@ -280,6 +281,10 @@ export function buildCustomerConfirmationHtml(payload: BookingEmailPayload) {
         ${metaCard("Tid", payload.time)}
       </tr>
     </table>
+
+    <p style="margin:18px 6px 0;font-size:15px;line-height:1.55;color:${INK};">
+      <strong>Adress:</strong> ${escapeHtml(SITE.address.full)}
+    </p>
 
     <p style="margin:28px 6px 12px;font-size:11px;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:${BRAND};">Valda tjänster</p>
     <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="border:1px solid ${LINE};border-radius:12px;overflow:hidden;">
@@ -308,7 +313,7 @@ export function buildCustomerConfirmationHtml(payload: BookingEmailPayload) {
   return emailShell({
     title: "Tack för din bokning!",
     eyebrow: SITE.name,
-    intro: "Din förfrågan är mottagen.",
+    intro: "Din tid är bokad.",
     body,
     footerNote: "Detta är en automatisk bekräftelse — svara gärna om något behöver ändras.",
   });
@@ -322,6 +327,7 @@ export function buildWeb3FormsFields(payload: BookingEmailPayload) {
     Biltyp: payload.carType,
     Datum: formatDateLabel(payload.date),
     Tid: payload.time,
+    Adress: SITE.address.full,
     Telefon: payload.phone,
     Tjänster: servicesLines(payload).join("\n"),
     Totalt: payload.total,

@@ -220,6 +220,7 @@ export default function OfferPopup() {
             <p className="offer-popup-desc">
               {formatDayShort(date)} kl. {time}. En bekräftelse skickas till {sanitizeEmail(email)}.
             </p>
+            <p className="offer-popup-desc">{SITE.address.full}</p>
             <p className="offer-popup-tag">Helrekond · {CAMPAIGN.campaignPrice}</p>
             <button type="button" className="offer-popup-submit" onClick={dismiss}>
               <span className="offer-popup-submit-main">Stäng</span>

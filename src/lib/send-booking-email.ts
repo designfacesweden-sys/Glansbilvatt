@@ -68,70 +68,85 @@ async function sendOwnerViaWeb3Forms(payload: BookingEmailPayload) {
   }
 }
 
-/**
- * Customer confirmation via FormSubmit classic form POST (not /ajax/).
- * Free auto-reply to the email field. Requires one-time activation in owner inbox.
- */
-function sendCustomerViaFormSubmit(payload: BookingEmailPayload): Promise<void> {
-  return new Promise((resolve) => {
-    if (typeof document === "undefined") {
-      resolve();
-      return;
-    }
-
-    const iframeName = `customer_mail_${Date.now()}`;
-    const iframe = document.createElement("iframe");
-    iframe.name = iframeName;
-    iframe.setAttribute("aria-hidden", "true");
-    iframe.style.cssText = "position:absolute;width:0;height:0;border:0;visibility:hidden";
-    document.body.appendChild(iframe);
-
-    const form = document.createElement("form");
-    form.method = "POST";
-    form.action = `https://formsubmit.co/${encodeURIComponent(SITE.bookingEmail)}`;
-    form.target = iframeName;
-    form.acceptCharset = "UTF-8";
-
-    const fields = buildWeb3FormsFields(payload);
-    const values: Record<string, string> = {
-      _subject: `Kundbekräftelse – ${payload.registration}`,
-      _template: "table",
-      _autoresponse: buildCustomerConfirmationText(payload),
-      _replyto: SITE.bookingEmail,
-      email: payload.email,
-      name: payload.customerName,
-      ...fields,
-      message: buildCustomerConfirmationText(payload),
-    };
-
-    for (const [name, value] of Object.entries(values)) {
-      const input = document.createElement("input");
-      input.type = "hidden";
-      input.name = name;
-      input.value = value;
-      form.appendChild(input);
-    }
-
-    const done = () => {
-      window.clearTimeout(timer);
-      form.remove();
-      iframe.remove();
-      resolve();
-    };
-
-    const timer = window.setTimeout(done, 4000);
-    iframe.addEventListener("load", done, { once: true });
-    document.body.appendChild(form);
-    form.submit();
-  });
+function formSubmitAjaxUrl() {
+  const site = SITE as typeof SITE & { formSubmitId?: string };
+  const id = site.formSubmitId?.trim() ?? "";
+  if (id) return `https://formsubmit.co/ajax/${id}`;
+  return `https://formsubmit.co/ajax/${encodeURIComponent(SITE.bookingEmail)}`;
 }
 
 /**
- * Prefer SMTP (owner + customer). Fallback: Web3Forms owner + FormSubmit customer auto-reply.
+ * FormSubmit AJAX: owner notification + customer autoresponse in one request.
+ * Throws if FormSubmit does not confirm success.
+ */
+async function sendViaFormSubmitAjax(
+  payload: BookingEmailPayload,
+  options: { ownerMessage: boolean },
+) {
+  const fields = buildWeb3FormsFields(payload);
+  const customerText = buildCustomerConfirmationText(payload);
+  const body: Record<string, string> = {
+    name: payload.customerName,
+    email: payload.email,
+    phone: payload.phone,
+    _subject: options.ownerMessage
+      ? bookingSubject(payload)
+      : `Bekräftelse – din bokning hos ${SITE.name}`,
+    _template: "table",
+    _captcha: "false",
+    _autoresponse: customerText,
+    _replyto: options.ownerMessage ? payload.email : SITE.bookingEmail,
+    ...fields,
+    message: options.ownerMessage ? buildBookingEmailText(payload) : customerText,
+  };
+
+  const response = await fetch(formSubmitAjaxUrl(), {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      Accept: "application/json",
+    },
+    body: JSON.stringify(body),
+  });
+
+  const data = (await response.json().catch(() => null)) as {
+    success?: boolean | string;
+    message?: string;
+  } | null;
+
+  const ok =
+    response.ok &&
+    (data?.success === true ||
+      data?.success === "true" ||
+      (typeof data?.message === "string" && /sent|success|thank/i.test(data.message)));
+
+  if (!ok) {
+    const raw = data?.message ?? "";
+    const needsActivation = /activat/i.test(raw);
+    throw new Error(
+      needsActivation
+        ? "Bekräftelsemejlet är inte aktiverat. Öppna glansigbiltvatt@gmail.com och klicka på länken från FormSubmit, och boka sedan igen."
+        : raw && raw.length < 180
+          ? raw
+          : "Kunde inte skicka bekräftelsemejl. Kontrollera skräppost eller ring oss.",
+    );
+  }
+}
+
+/**
+ * Prefer SMTP (owner + customer HTML).
+ * Else: Web3Forms for the owner, then FormSubmit for the customer Bekräftelse.
+ * If Web3Forms is missing, FormSubmit sends both.
  */
 export async function sendBookingToEmail(payload: BookingEmailPayload): Promise<void> {
   if (await sendViaSmtpApi(payload)) return;
 
-  await sendOwnerViaWeb3Forms(payload);
-  await sendCustomerViaFormSubmit(payload);
+  const accessKey = process.env.NEXT_PUBLIC_WEB3FORMS_ACCESS_KEY?.trim();
+  if (accessKey) {
+    await sendOwnerViaWeb3Forms(payload);
+    await sendViaFormSubmitAjax(payload, { ownerMessage: false });
+    return;
+  }
+
+  await sendViaFormSubmitAjax(payload, { ownerMessage: true });
 }
