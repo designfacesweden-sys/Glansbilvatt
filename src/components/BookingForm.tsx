@@ -134,6 +134,11 @@ export default function BookingForm({ variant = "page", onClose }: BookingFormPr
   }, [viewMonth]);
 
   const today = useMemo(() => startOfToday(), []);
+  const earliest = useMemo(() => {
+    const date = new Date(today);
+    date.setDate(date.getDate() + 1);
+    return date;
+  }, [today]);
 
   const monthLabel = new Intl.DateTimeFormat("sv-SE", {
     month: "long",
@@ -160,7 +165,7 @@ export default function BookingForm({ variant = "page", onClose }: BookingFormPr
       case 2:
         return data.carType !== "";
       case 3:
-        return data.date !== null;
+        return data.date !== null && data.date >= earliest;
       case 4:
         return data.time !== "";
       case 5:
@@ -168,14 +173,14 @@ export default function BookingForm({ variant = "page", onClose }: BookingFormPr
       default:
         return false;
     }
-  }, [step, data]);
+  }, [step, data, earliest]);
 
   const update = <K extends keyof BookingData>(key: K, value: BookingData[K]) => {
     setData((prev) => ({ ...prev, [key]: value }));
   };
 
   const submitBooking = async () => {
-    if (!canContinue || submitting || !data.date) return;
+    if (!canContinue || submitting || !data.date || data.date < earliest) return;
 
     setSubmitting(true);
     setSubmitError(null);
@@ -390,6 +395,7 @@ export default function BookingForm({ variant = "page", onClose }: BookingFormPr
           {step === 3 && (
             <>
               <p className="booking-form-section-title">Välj datum</p>
+              <p className="booking-form-date-note">Bokning görs minst en dag i förväg. Söndagar är stängt.</p>
               <div className="booking-form-calendar-wrap">
                 <div className="booking-form-month-nav">
                   <button
@@ -424,10 +430,9 @@ export default function BookingForm({ variant = "page", onClose }: BookingFormPr
                   ))}
                   {monthDays.map((day) => {
                     const isSunday = day.getDay() === 0;
-                    const isPast = day < today;
-                    const isToday = day.toDateString() === today.toDateString();
+                    const isTooSoon = day < earliest;
                     const isSelected = data.date?.toDateString() === day.toDateString();
-                    const unavailable = isSunday || isPast;
+                    const unavailable = isSunday || isTooSoon;
 
                     return (
                       <button
@@ -444,9 +449,8 @@ export default function BookingForm({ variant = "page", onClose }: BookingFormPr
                         className={[
                           "booking-form-calendar-day",
                           isSelected && "booking-form-calendar-day--selected",
-                          isToday && !isSelected && "booking-form-calendar-day--today",
                           isSunday && "booking-form-calendar-day--closed",
-                          isPast && !isSunday && "booking-form-calendar-day--past",
+                          isTooSoon && !isSunday && "booking-form-calendar-day--past",
                         ]
                           .filter(Boolean)
                           .join(" ")}

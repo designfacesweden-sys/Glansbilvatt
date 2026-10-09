@@ -2379,6 +2379,13 @@ body.cart-booking-open .services--with-cart {
   margin-bottom: 0.25rem;
 }
 
+.booking-form-date-note {
+  margin: 0 0 0.75rem;
+  font-size: 0.8125rem;
+  line-height: 1.4;
+  color: #666;
+}
+
 .booking-form-options {
   display: flex;
   flex-direction: column;

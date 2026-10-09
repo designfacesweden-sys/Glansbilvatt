@@ -93,6 +93,11 @@ export default function OfferPopup() {
   });
 
   const today = useMemo(() => startOfToday(), []);
+  const earliest = useMemo(() => {
+    const date = new Date(today);
+    date.setDate(date.getDate() + 1);
+    return date;
+  }, [today]);
   const monthDays = useMemo(
     () => getMonthDays(viewMonth.getFullYear(), viewMonth.getMonth()),
     [viewMonth],
@@ -137,6 +142,7 @@ export default function OfferPopup() {
   };
 
   const chooseDate = (day: Date) => {
+    if (day < earliest || day.getDay() === 0) return;
     setDate(day);
     const allowed = timeSlotsFor(day);
     if (time && !allowed.includes(time)) setTime("");
@@ -149,6 +155,7 @@ export default function OfferPopup() {
     isValidRegistration(registration) &&
     carType !== "" &&
     date !== null &&
+    date >= earliest &&
     time !== "" &&
     !submitting;
 
@@ -339,7 +346,7 @@ export default function OfferPopup() {
                 <legend className="offer-popup-label">
                   Datum <span aria-hidden>*</span>
                 </legend>
-                <p className="offer-popup-hint">Välj en dag du kan komma. Söndagar är stängt.</p>
+                <p className="offer-popup-hint">Bokning görs minst en dag i förväg. Söndagar är stängt.</p>
                 <div className="booking-form-calendar-wrap offer-popup-calendar">
                   <div className="booking-form-month-nav">
                     <button
@@ -378,10 +385,9 @@ export default function OfferPopup() {
                     ))}
                     {monthDays.map((day) => {
                       const isSunday = day.getDay() === 0;
-                      const isPast = day < today;
-                      const isToday = day.toDateString() === today.toDateString();
+                      const isTooSoon = day < earliest;
                       const isSelected = date?.toDateString() === day.toDateString();
-                      const unavailable = isSunday || isPast;
+                      const unavailable = isSunday || isTooSoon;
 
                       return (
                         <button
@@ -396,9 +402,8 @@ export default function OfferPopup() {
                           className={[
                             "booking-form-calendar-day",
                             isSelected && "booking-form-calendar-day--selected",
-                            isToday && !isSelected && "booking-form-calendar-day--today",
                             isSunday && "booking-form-calendar-day--closed",
-                            isPast && !isSunday && "booking-form-calendar-day--past",
+                            isTooSoon && !isSunday && "booking-form-calendar-day--past",
                           ]
                             .filter(Boolean)
                             .join(" ")}
